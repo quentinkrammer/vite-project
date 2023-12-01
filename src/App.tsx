@@ -27,8 +27,6 @@ function App() {
     if (!selectedCity) return;
     console.log("scroll to " + JSON.stringify(selectedCity));
     scroller.scrollToIndex(selectedCity.idx);
-    // also exist but no good
-    // scroller.scrollInView(selectedCity.idx, "to-start");
   }
   console.log("rendered");
   return (
@@ -37,7 +35,7 @@ function App() {
       <ListBox
         virtualScrollerOptions={{
           itemSize: 38,
-          delay: 1000,
+          appendOnly: true,
         }}
         ref={ref}
         value={selectedCity}
