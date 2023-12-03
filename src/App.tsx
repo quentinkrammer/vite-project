@@ -16,6 +16,15 @@ const cities = [
   { name: "Zi", code: "Zo", idx: 8 },
 ];
 
+function valueIsIntersectingRange(
+  value: number | undefined,
+  rangeStart: number | undefined,
+  rangeEnd: number | undefined
+) {
+  if (!value || !rangeEnd || !rangeStart) return false;
+  return value > rangeStart && value < rangeEnd;
+}
+
 function App() {
   const [selectedCity, setSelectedCity] = useState<
     (typeof cities)[number] | null
@@ -23,10 +32,27 @@ function App() {
   const ref = useRef<ListBox>(null!);
 
   function onButton() {
-    const scroller = ref.current.getVirtualScroller();
     if (!selectedCity) return;
-    console.log("scroll to " + JSON.stringify(selectedCity));
-    scroller.scrollToIndex(selectedCity.idx);
+    const scroller = ref.current.getVirtualScroller();
+    const ele = ref.current.getElement();
+    const containerEle = ele; // ele.querySelector("ul");
+    const childEle = ele.querySelector(`li:nth-child(${selectedCity.idx + 1})`);
+    // console.log(childEle);
+    const container = containerEle?.getBoundingClientRect();
+    const child = childEle?.getBoundingClientRect();
+    if (!child || !containerEle) return;
+    console.log("container", container);
+    console.log("child", child);
+    const childIsVisible =
+      valueIsIntersectingRange(child.top, container.top, container.bottom) ||
+      valueIsIntersectingRange(child.bottom, container.top, container.bottom);
+    console.log("vivible: ", childIsVisible);
+    if (!childIsVisible) {
+      childEle?.scrollIntoView();
+    }
+    // if (!selectedCity) return;
+    // console.log("scroll to " + JSON.stringify(selectedCity));
+    // scroller.scrollToIndex(selectedCity.idx);
   }
   console.log("rendered");
   return (
