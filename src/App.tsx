@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { clsx } from "clsx";
+import { css } from "goober";
+import { flushSync } from "react-dom";
+import { create } from "zustand";
+
+const useStore = create<{ left: boolean; toggle: () => void }>((set) => ({
+  left: true,
+  toggle: () => {
+    set((state) => ({ left: !state.left }));
+  },
+}));
 
 function App() {
-  const [count, setCount] = useState(0)
+  //const [left, setLeft] = useState(true);
+  const { left, toggle } = useStore();
+
+  const onMove = () => {
+    document.startViewTransition(() => {
+      flushSync(() => {
+        toggle();
+        //setLeft((prev) => !prev);
+      });
+    });
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <button onClick={onMove}>move</button>
+      <span
+        style={{ position: "fixed", top: "50vh", viewTransitionName: "moin" }}
+        className={clsx({ [leftCls]: left, [rightCls]: !left })}
+      >
+        Moin
+      </span>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
+
+const leftCls = css({ left: 0 });
+const rightCls = css({ right: 0 });
